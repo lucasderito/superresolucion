@@ -1,17 +1,15 @@
 import os
 
-# Forzar que HOME y XDG_CACHE_HOME sean directorios escribibles en /tmp
+# Forzar que HOME y XDG_CACHE_HOME apunten a directorios en /tmp
 os.environ["HOME"] = "/tmp"
-os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
+os.environ["XDG_CACHE_HOME"] = "/tmp/xdg_cache"
 
-# Crea un directorio de caché temporal y asegúrate de que existe.
-cache_dir = "/tmp/.cache/BasicSR"
+# Usar un directorio de caché en /tmp que se sepa que es escribible
+cache_dir = "/tmp/BasicSR_cache"
 os.makedirs(cache_dir, exist_ok=True)
-
-# Indica a Basicsr que use este directorio para la caché.
 os.environ["BASICSR_CACHE_DIR"] = cache_dir
 
-# Sobreescribe os.path.expanduser para que "~" se convierta en "/tmp"
+# Sobreescribir os.path.expanduser para que "~" se convierta en "/tmp"
 os.path.expanduser = lambda path: path.replace("~", "/tmp")
 
 import sys
@@ -28,20 +26,18 @@ from realesrgan import RealESRGANer
 # Establecer dispositivo (GPU si está disponible, sino CPU)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Cargar modelo Real-ESRGAN utilizando el archivo local del modelo.
 @st.cache_resource
 def load_model():
     model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
     model = model.to(device)
-    # Configuración del upsampler: se usa la ruta local al modelo.
     upsampler = RealESRGANer(
         scale=4,
-        model_path="models/RealESRGAN_x4plus.pth",  # Ruta local al modelo pre-descargado
+        model_path="https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
         model=model,
-        tile=400,      # Divide la imagen en bloques para optimizar el uso de memoria
+        tile=400,
         tile_pad=10,
         pre_pad=0,
-        half=False     # False para CPU; si usas GPU, podrías probar half=True
+        half=False
     )
     return upsampler
 
