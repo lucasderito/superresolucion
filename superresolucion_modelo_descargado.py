@@ -1,6 +1,10 @@
 import os
 
-# Forzar que HOME y XDG_CACHE_HOME apunten a directorios en /tmp
+# Forzar que LD_LIBRARY_PATH incluya el directorio habitual de libGL.so.1
+ld_path = os.environ.get("LD_LIBRARY_PATH", "")
+os.environ["LD_LIBRARY_PATH"] = "/usr/lib/x86_64-linux-gnu:" + ld_path
+
+# Forzar que HOME y XDG_CACHE_HOME apunten a directorios en /tmp (escrituibles en Streamlit Cloud)
 os.environ["HOME"] = "/tmp"
 os.environ["XDG_CACHE_HOME"] = "/tmp/xdg_cache"
 
@@ -28,11 +32,18 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 @st.cache_resource
 def load_model():
-    model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
+    model = RRDBNet(
+        num_in_ch=3,
+        num_out_ch=3,
+        num_feat=64,
+        num_block=23,
+        num_grow_ch=32,
+        scale=4
+    )
     model = model.to(device)
     upsampler = RealESRGANer(
         scale=4,
-        model_path="models/RealESRGAN_x4plus.pth",  # Usar el archivo local, no la URL
+        model_path="models/RealESRGAN_x4plus.pth",  # Usar el archivo local
         model=model,
         tile=400,
         tile_pad=10,
@@ -46,7 +57,10 @@ upsampler = load_model()
 st.title("Superresolución de Imágenes con Real-ESRGAN by Lucas De Rito")
 
 # Subir imagen
-uploaded_file = st.file_uploader("Sube una imagen de baja resolución o en mal estado", type=["jpg", "png", "jpeg", "webp"])
+uploaded_file = st.file_uploader(
+    "Sube una imagen de baja resolución o en mal estado",
+    type=["jpg", "png", "jpeg", "webp"]
+)
 
 if uploaded_file is not None:
     # Leer imagen
@@ -110,4 +124,3 @@ Esta aplicación es parte del portafolio de proyectos de **Lucas De Rito**, demo
 
 *Desarrollada con Streamlit, OpenCV, Real-ESRGAN y PyTorch.*
 """)
-
