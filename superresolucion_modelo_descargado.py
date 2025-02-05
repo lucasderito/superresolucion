@@ -32,7 +32,7 @@ def load_model():
     model = model.to(device)
     upsampler = RealESRGANer(
         scale=4,
-        model_path="models/RealESRGAN_x4plus.pth",  # Usar el modelo local
+        model_path="models/RealESRGAN_x4plus.pth",  # Usar el archivo local, no la URL
         model=model,
         tile=400,
         tile_pad=10,
@@ -110,3 +110,4 @@ Esta aplicación es parte del portafolio de proyectos de **Lucas De Rito**, demo
 
 *Desarrollada con Streamlit, OpenCV, Real-ESRGAN y PyTorch.*
 """)
+
