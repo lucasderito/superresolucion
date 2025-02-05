@@ -32,7 +32,7 @@ def load_model():
     model = model.to(device)
     upsampler = RealESRGANer(
         scale=4,
-        model_path="https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
+        model_path="models/RealESRGAN_x4plus.pth",  # Usar el modelo local
         model=model,
         tile=400,
         tile_pad=10,
