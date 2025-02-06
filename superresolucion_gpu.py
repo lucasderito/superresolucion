@@ -1,14 +1,14 @@
-import os
-
-# Define un directorio de caché temporal y asegúrate de que existe.
-cache_dir = "/tmp/.cache/BasicSR"
-os.makedirs(cache_dir, exist_ok=True)
-
-# Fuerza a basicsr (y otras librerías) a usar este directorio para la caché.
-os.environ["BASICSR_CACHE_DIR"] = cache_dir
-
-# Opcional: también puedes forzar que HOME apunte a /tmp para que expanduser("~") dé un directorio escribible.
-os.environ["HOME"] = "/tmp"
+# import os
+#
+# # Define un directorio de caché temporal y asegúrate de que existe.
+# cache_dir = "/tmp/.cache/BasicSR"
+# os.makedirs(cache_dir, exist_ok=True)
+#
+# # Fuerza a basicsr (y otras librerías) a usar este directorio para la caché.
+# os.environ["BASICSR_CACHE_DIR"] = cache_dir
+#
+# # Opcional: también puedes forzar que HOME apunte a /tmp para que expanduser("~") dé un directorio escribible.
+# os.environ["HOME"] = "/tmp"
 
 import sys
 import torchvision.transforms.functional as F

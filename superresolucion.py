@@ -1,18 +1,18 @@
-import os
-
-# Forzar que HOME y XDG_CACHE_HOME sean directorios escribibles en /tmp
-os.environ["HOME"] = "/tmp"
-os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
-
-# Crea un directorio de caché temporal y asegúrate de que existe.
-cache_dir = "/tmp/.cache/BasicSR"
-os.makedirs(cache_dir, exist_ok=True)
-
-# Indica a Basicsr que use este directorio para la caché.
-os.environ["BASICSR_CACHE_DIR"] = cache_dir
-
-# Si es necesario, sobreescribe os.path.expanduser para que "~" se convierta en "/tmp"
-os.path.expanduser = lambda path: path.replace("~", "/tmp")
+# import os
+#
+# # Forzar que HOME y XDG_CACHE_HOME sean directorios escribibles en /tmp
+# os.environ["HOME"] = "/tmp"
+# os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
+#
+# # Crea un directorio de caché temporal y asegúrate de que existe.
+# cache_dir = "/tmp/.cache/BasicSR"
+# os.makedirs(cache_dir, exist_ok=True)
+#
+# # Indica a Basicsr que use este directorio para la caché.
+# os.environ["BASICSR_CACHE_DIR"] = cache_dir
+#
+# # Si es necesario, sobreescribe os.path.expanduser para que "~" se convierta en "/tmp"
+# os.path.expanduser = lambda path: path.replace("~", "/tmp")
 
 import sys
 import torchvision.transforms.functional as F
