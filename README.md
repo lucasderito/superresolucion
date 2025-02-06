@@ -78,6 +78,6 @@ Para un uso profesional o en producción, se recomienda una infraestructura adec
 
 Contacto
 
-Para cualquier consulta o mejora, puedes contactarme a través de LinkedIn o contribuir directamente en el repositorio.
+Para cualquier consulta o mejora, puedes contactarme a través de LinkedIn o a lucasderito@issd.edu.ar
 
 Este proyecto forma parte de mi portafolio en inteligencia artificial y visión por computadora, donde combino modelos de deep learning con interfaces interactivas para resolver problemas del mundo real.
