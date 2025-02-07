@@ -1,13 +1,13 @@
 import os
 
-# Desactivar el file watcher de Streamlit para evitar que inspeccione módulos problemáticos (por ejemplo, en Torch)
+# Desactivar el file watcher de Streamlit para evitar inspección problemática
 os.environ["STREAMLIT_SERVER_FILE_WATCHER_TYPE"] = "none"
 
-# Forzar que LD_LIBRARY_PATH incluya el directorio habitual donde se encuentra libGL.so.1
+# Forzar que LD_LIBRARY_PATH incluya el directorio habitual de libGL.so.1
 ld_path = os.environ.get("LD_LIBRARY_PATH", "")
 os.environ["LD_LIBRARY_PATH"] = "/usr/lib/x86_64-linux-gnu:" + ld_path
 
-# Forzar que HOME y XDG_CACHE_HOME apunten a directorios en /tmp (que suelen ser escribibles en entornos Cloud)
+# Forzar que HOME y XDG_CACHE_HOME apunten a directorios en /tmp (escrituibles en Streamlit Cloud)
 os.environ["HOME"] = "/tmp"
 os.environ["XDG_CACHE_HOME"] = "/tmp/xdg_cache"
 
@@ -70,7 +70,17 @@ if uploaded_file is not None:
     image = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), 1)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    # Aplicar superresolución
+    # Redimensionar la imagen si es demasiado grande (por ejemplo, ancho mayor a 1024 píxeles)
+    max_width = 1024
+    height, width = image.shape[:2]
+    if width > max_width:
+        scale = max_width / width
+        new_width = int(width * scale)
+        new_height = int(height * scale)
+        image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_AREA)
+        st.info(f"La imagen fue redimensionada a {new_width}x{new_height} para optimizar el procesamiento.")
+
+    # Procesar la imagen con superresolución (capturamos errores para evitar que la app se caiga)
     try:
         with st.spinner("Mejorando la imagen (puede tardar en CPU)..."):
             output, _ = upsampler.enhance(image, outscale=4)
@@ -80,7 +90,7 @@ if uploaded_file is not None:
         # Mostrar resultados en dos columnas
         col1, col2 = st.columns(2)
         with col1:
-            st.image(image, caption="Imagen Original (Baja Resolución)", use_container_width=True)
+            st.image(image, caption="Imagen Original (Redimensionada, si aplicó)", use_container_width=True)
         with col2:
             st.image(output, caption="Imagen Mejorada (Superresolución)", use_container_width=True)
 
@@ -130,3 +140,4 @@ Esta aplicación es parte del portafolio de proyectos de **Lucas De Rito**, demo
 
 *Desarrollada con Streamlit, OpenCV, Real-ESRGAN y PyTorch.*
 """)
+
