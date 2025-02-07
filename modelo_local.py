@@ -66,33 +66,29 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file is not None:
-    # Leer imagen
-    image = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), 1)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    # Redimensionar la imagen si es demasiado grande (por ejemplo, ancho mayor a 1024 píxeles)
-    max_width = 1024
-    height, width = image.shape[:2]
-    if width > max_width:
-        scale = max_width / width
-        new_width = int(width * scale)
-        new_height = int(height * scale)
-        image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_AREA)
-        st.info(f"La imagen fue redimensionada a {new_width}x{new_height} para optimizar el procesamiento.")
-
-    # Procesar la imagen con superresolución (capturamos errores para evitar que la app se caiga)
-    try:
-        with st.spinner("Mejorando la imagen (puede tardar en CPU)..."):
-            output, _ = upsampler.enhance(image, outscale=4)
-    except Exception as e:
-        st.error(f"Error al procesar la imagen: {e}")
+    # Verificar el tamaño del archivo (200 KB = 200 * 1024 bytes)
+    max_size_bytes = 200 * 1024
+    if uploaded_file.size > max_size_bytes:
+        st.error("El tamaño de la imagen excede los 200 KB. Por favor, sube una imagen de menor tamaño.")
     else:
-        # Mostrar resultados en dos columnas
-        col1, col2 = st.columns(2)
-        with col1:
-            st.image(image, caption="Imagen Original (Redimensionada, si aplicó)", use_container_width=True)
-        with col2:
-            st.image(output, caption="Imagen Mejorada (Superresolución)", use_container_width=True)
+        # Leer imagen
+        file_bytes = uploaded_file.read()
+        image = cv2.imdecode(np.frombuffer(file_bytes, np.uint8), 1)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        # Aplicar superresolución
+        try:
+            with st.spinner("Mejorando la imagen (puede tardar en CPU)..."):
+                output, _ = upsampler.enhance(image, outscale=4)
+        except Exception as e:
+            st.error(f"Error al procesar la imagen: {e}")
+        else:
+            # Mostrar resultados en dos columnas
+            col1, col2 = st.columns(2)
+            with col1:
+                st.image(image, caption="Imagen Original (Baja Resolución)", use_container_width=True)
+            with col2:
+                st.image(output, caption="Imagen Mejorada (Superresolución)", use_container_width=True)
 
 # Línea separatoria
 st.markdown('---')
@@ -140,4 +136,5 @@ Esta aplicación es parte del portafolio de proyectos de **Lucas De Rito**, demo
 
 *Desarrollada con Streamlit, OpenCV, Real-ESRGAN y PyTorch.*
 """)
+
 
